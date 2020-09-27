@@ -1,0 +1,6 @@
+{
+   "input_file": {
+      "class" : "File",
+      "path": "/home/airflow/sample-workflows/dna2protein/data/input.txt"
+     }
+}

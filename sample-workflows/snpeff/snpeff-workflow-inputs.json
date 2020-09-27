@@ -1,0 +1,7 @@
+{
+  "infile": {
+    "class": "File",
+    "path": "/home/airflow/sample-workflows/snpeff/data/chr22.truncated.nosamples.1kg.vcf.gz"
+  },
+  "genome": "hg19"
+}

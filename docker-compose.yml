@@ -1,0 +1,117 @@
+version: "3.7"
+services:
+
+  redis:
+    image: 'redis:5.0.5'
+    container_name: redis
+    networks: 
+        - airflow-net
+
+  mysqldb:
+    image: mysql:latest
+    container_name: mysqldb
+    command: --default-authentication-plugin=mysql_native_password
+    networks: 
+      - airflow-net
+    volumes:
+      - "mysqldb:/var/lib/mysql"
+    env_file:
+      - /home/airflow/cwl-airflow-docker/config.env
+    ports:
+      - "3306:3306"
+    security_opt:
+      - seccomp:unconfined
+
+  flower:
+    image: cwl-airflow-docker
+    user: airflow
+    container_name: flower
+    depends_on: 
+      - redis
+    networks: 
+      - airflow-net
+    ports:
+      - "5555:5555"
+    command: flower
+    env_file:
+      - /home/airflow/cwl-airflow-docker/config.env
+
+  webserver:
+    image: cwl-airflow-docker
+    user: airflow    
+    container_name: webserver
+    depends_on: 
+      - mysqldb
+      - redis
+    networks: 
+      - airflow-net
+    volumes:
+      - /home/airflow/dags:/home/airflow/dags
+      - /home/airflow/sample-workflows:/home/airflow/sample-workflows
+      - /home/airflow/cwl_inputs_folder:/home/airflow/cwl_inputs_folder
+      - /home/airflow/cwl_outputs_folder:/home/airflow/cwl_outputs_folder
+      - /home/airflow/cwl_pickle_folder:/home/airflow/cwl_pickle_folder
+      - /home/airflow/cwl_tmp_folder:/home/airflow/cwl_tmp_folder
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    command: webserver
+    env_file:
+      - /home/airflow/cwl-airflow-docker/config.env
+  
+  scheduler:
+    image: cwl-airflow-docker
+    user: airflow    
+    container_name: scheduler
+    depends_on: 
+      - webserver
+    networks: 
+      - airflow-net
+    volumes:
+      - /home/airflow/dags:/home/airflow/dags
+      - /home/airflow/sample-workflows:/home/airflow/sample-workflows
+      - /home/airflow/cwl_inputs_folder:/home/airflow/cwl_inputs_folder
+      - /home/airflow/cwl_outputs_folder:/home/airflow/cwl_outputs_folder
+      - /home/airflow/cwl_pickle_folder:/home/airflow/cwl_pickle_folder
+      - /home/airflow/cwl_tmp_folder:/home/airflow/cwl_tmp_folder
+    command: scheduler
+    env_file:
+      - /home/airflow/cwl-airflow-docker/config.env
+
+  worker:
+    image: cwl-airflow-docker
+    user: airflow    
+    container_name: worker
+    depends_on: 
+      - scheduler
+    networks: 
+      - airflow-net
+    volumes:
+      - /home/airflow/dags:/home/airflow/dags
+      - /home/airflow/sample-workflows:/home/airflow/sample-workflows
+      - /home/airflow/cwl_inputs_folder:/home/airflow/cwl_inputs_folder
+      - /home/airflow/cwl_outputs_folder:/home/airflow/cwl_outputs_folder
+      - /home/airflow/cwl_pickle_folder:/home/airflow/cwl_pickle_folder
+      - /home/airflow/cwl_tmp_folder:/home/airflow/cwl_tmp_folder
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: worker
+    env_file:
+      - /home/airflow/cwl-airflow-docker/config.env
+
+  mysql_admin_portal:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: mysql_admin_portal
+    depends_on: 
+      - mysqldb
+    networks: 
+      - airflow-net
+    ports:
+      - "8085:80"
+    links:
+      - mysqldb:db
+
+networks:
+  airflow-net:
+volumes:
+  mysqldb:
