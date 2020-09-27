@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # AUTHOR:Tony Tannous
-# DESCRIPTION: Script to create Airflow v1.0.11 API user and HTTP Authorization header/token
+# DESCRIPTION: Script to create Airflow v1.10.11 API user and HTTP Authorization header/token
 
 import argparse
 from airflow import models

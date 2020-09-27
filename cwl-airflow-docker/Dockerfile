@@ -1,6 +1,6 @@
 # VERSION 1.10.11
 # AUTHOR:Tony Tannous
-# DESCRIPTION: Docker image for CWL-Airflow v1.22/Airflow v1.0.11
+# DESCRIPTION: Docker image for CWL-Airflow v1.2.2/Airflow v1.10.11
 # BUILD: docker build -t cwl-airflow-docker .
 # SOURCE: https://github.com/tonys-code-base/cwl-airflow-stack/cwl-airflow-docker
 
